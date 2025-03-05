@@ -40,7 +40,7 @@ local function createConfirmation()
         StarterGui:SetCore("SendNotification", {Title = "Loading..."; Text = "Executing script"; Duration = 2})
 
         -- Execute your GitHub script here
-        loadstring(game:HttpGet('https://raw.githubusercontent.com/YOUR_USERNAME/YOUR_REPOSITORY/main/YOUR_SCRIPT.lua'))()
+        loadstring(game:HttpGet('https://raw.githubusercontent.com/nahnahanah/nahnahanah/refs/heads/main/Rayfield%20ui%20scripts'))()
     end)
 
     -- No Button Click (Cancel Execution)
