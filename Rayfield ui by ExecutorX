@@ -1,6 +1,8 @@
 -- Services
 local StarterGui = game:GetService("StarterGui")
 local HttpService = game:GetService("HttpService")
+local DataStoreService = game:GetService("DataStoreService")
+local KeyStore = DataStoreService:GetDataStore("KeyStore")
 
 -- Configuration
 local discordInvite = "https://discord.gg/qFf3vQyHw7" -- Your Discord server invite
@@ -12,8 +14,36 @@ local function checkKey(inputKey)
     return inputKey == validKey
 end
 
+-- Function to save key
+local function saveKey(player, inputKey)
+    local success, err = pcall(function()
+        KeyStore:SetAsync(player.UserId, inputKey)
+    end)
+    if not success then
+        warn("Failed to save key: " .. err)
+    end
+end
+
+-- Function to load saved key
+local function loadSavedKey(player)
+    local success, storedKey = pcall(function()
+        return KeyStore:GetAsync(player.UserId)
+    end)
+    if success and storedKey == validKey then
+        return true
+    end
+    return false
+end
+
 -- UI for Key Input
-local function createKeyUI()
+local function createKeyUI(player)
+    if loadSavedKey(player) then
+        StarterGui:SetCore("SendNotification", {Title = "Success"; Text = "Key Verified Automatically! Loading script..."; Duration = 2})
+        wait(1)
+        loadstring(game:HttpGet("https://pastebin.com/raw/B0zXzzNt", true))()
+        return
+    end
+
     local screenGui = Instance.new("ScreenGui", game.CoreGui)
 
     local frame = Instance.new("Frame", screenGui)
@@ -54,7 +84,7 @@ local function createKeyUI()
     local discordButton = Instance.new("TextButton", frame)
     discordButton.Size = UDim2.new(0.8, 0, 0.2, 0)
     discordButton.Position = UDim2.new(0.1, 0, 0.75, 0)
-    discordButton.Text = "Join Discord for key"
+    discordButton.Text = "Join Discord"
     discordButton.BackgroundColor3 = Color3.fromRGB(0, 122, 255)
     discordButton.TextColor3 = Color3.new(1, 1, 1)
 
@@ -62,6 +92,7 @@ local function createKeyUI()
     submitButton.MouseButton1Click:Connect(function()
         local inputKey = textBox.Text
         if checkKey(inputKey) then
+            saveKey(player, inputKey)
             screenGui:Destroy()
             StarterGui:SetCore("SendNotification", {Title = "Success"; Text = "Key Verified! Loading script..."; Duration = 2})
             wait(1)
@@ -85,4 +116,4 @@ local function createKeyUI()
 end
 
 -- Run Key UI
-createKeyUI()
+createKeyUI(game.Players.LocalPlayer)
