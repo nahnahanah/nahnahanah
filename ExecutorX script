@@ -1,0 +1,75 @@
+-- Services
+local StarterGui = game:GetService("StarterGui")
+
+-- Create Loading Screen
+local loadingScreen = Instance.new("ScreenGui", game.CoreGui)
+
+local loadingFrame = Instance.new("Frame", loadingScreen)
+loadingFrame.Size = UDim2.new(0.3, 0, 0.2, 0)
+loadingFrame.Position = UDim2.new(0.35, 0, 0.4, 0)
+loadingFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+loadingFrame.BorderSizePixel = 2
+loadingFrame.BorderColor3 = Color3.fromRGB(255, 255, 255)
+
+local loadingLabel = Instance.new("TextLabel", loadingFrame)
+loadingLabel.Size = UDim2.new(1, 0, 1, 0)
+loadingLabel.Text = "Please wait, loading..."
+loadingLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+loadingLabel.BackgroundTransparency = 1
+loadingLabel.TextSize = 20
+
+-- Wait 3 seconds before showing confirmation
+task.wait(3)
+loadingScreen:Destroy()
+
+-- Function to Create Confirmation UI
+local function createConfirmation()
+    local screenGui = Instance.new("ScreenGui", game.CoreGui)
+
+    local frame = Instance.new("Frame", screenGui)
+    frame.Size = UDim2.new(0.3, 0, 0.2, 0)
+    frame.Position = UDim2.new(0.35, 0, 0.4, 0)
+    frame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+    frame.BorderSizePixel = 2
+    frame.BorderColor3 = Color3.fromRGB(255, 255, 255)
+
+    local textLabel = Instance.new("TextLabel", frame)
+    textLabel.Size = UDim2.new(1, 0, 0.5, 0)
+    textLabel.Position = UDim2.new(0, 0, 0, 0)
+    textLabel.Text = "Do you want to run the script?"
+    textLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    textLabel.BackgroundTransparency = 1
+    textLabel.TextSize = 20
+
+    local yesButton = Instance.new("TextButton", frame)
+    yesButton.Size = UDim2.new(0.4, 0, 0.3, 0)
+    yesButton.Position = UDim2.new(0.1, 0, 0.6, 0)
+    yesButton.Text = "Yes"
+    yesButton.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
+    yesButton.TextColor3 = Color3.new(0, 0, 0)
+
+    local noButton = Instance.new("TextButton", frame)
+    noButton.Size = UDim2.new(0.4, 0, 0.3, 0)
+    noButton.Position = UDim2.new(0.5, 0, 0.6, 0)
+    noButton.Text = "No"
+    noButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+    noButton.TextColor3 = Color3.new(0, 0, 0)
+
+    -- Yes Button Click (Execute Script)
+    yesButton.MouseButton1Click:Connect(function()
+        screenGui:Destroy()
+        StarterGui:SetCore("SendNotification", {Title = "Loading..."; Text = "Executing script"; Duration = 2})
+
+        -- Execute your GitHub script here
+        loadstring(game:HttpGet('https://raw.githubusercontent.com/YOUR_USERNAME/YOUR_REPOSITORY/main/YOUR_SCRIPT.lua'))()
+    end)
+
+    -- No Button Click (Cancel Execution)
+    noButton.MouseButton1Click:Connect(function()
+        screenGui:Destroy()
+        StarterGui:SetCore("SendNotification", {Title = "Cancelled"; Text = "Script not executed"; Duration = 2})
+    end)
+end
+
+-- Show Confirmation UI
+createConfirmation()
