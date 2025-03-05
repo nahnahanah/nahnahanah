@@ -1,0 +1,88 @@
+-- Services
+local StarterGui = game:GetService("StarterGui")
+local HttpService = game:GetService("HttpService")
+
+-- Configuration
+local discordInvite = "https://discord.gg/qFf3vQyHw7" -- Your Discord server invite
+local keyLink = "https://rekonise.com/get-key-zylbq" -- Your key retrieval link
+local validKey = "executorXontop" -- Your key
+
+-- Function to check key
+local function checkKey(inputKey)
+    return inputKey == validKey
+end
+
+-- UI for Key Input
+local function createKeyUI()
+    local screenGui = Instance.new("ScreenGui", game.CoreGui)
+
+    local frame = Instance.new("Frame", screenGui)
+    frame.Size = UDim2.new(0.3, 0, 0.3, 0)
+    frame.Position = UDim2.new(0.35, 0, 0.35, 0)
+    frame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+    frame.BorderSizePixel = 2
+    frame.BorderColor3 = Color3.fromRGB(255, 255, 255)
+
+    local textLabel = Instance.new("TextLabel", frame)
+    textLabel.Size = UDim2.new(1, 0, 0.2, 0)
+    textLabel.Text = "Enter your key:"
+    textLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    textLabel.BackgroundTransparency = 1
+    textLabel.TextSize = 18
+
+    local textBox = Instance.new("TextBox", frame)
+    textBox.Size = UDim2.new(0.8, 0, 0.2, 0)
+    textBox.Position = UDim2.new(0.1, 0, 0.25, 0)
+    textBox.PlaceholderText = "Enter key here"
+    textBox.Text = ""
+    textBox.TextSize = 16
+
+    local submitButton = Instance.new("TextButton", frame)
+    submitButton.Size = UDim2.new(0.4, 0, 0.2, 0)
+    submitButton.Position = UDim2.new(0.1, 0, 0.5, 0)
+    submitButton.Text = "Submit"
+    submitButton.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
+    submitButton.TextColor3 = Color3.new(0, 0, 0)
+
+    local getKeyButton = Instance.new("TextButton", frame)
+    getKeyButton.Size = UDim2.new(0.4, 0, 0.2, 0)
+    getKeyButton.Position = UDim2.new(0.5, 0, 0.5, 0)
+    getKeyButton.Text = "Get Key"
+    getKeyButton.BackgroundColor3 = Color3.fromRGB(255, 165, 0)
+    getKeyButton.TextColor3 = Color3.new(0, 0, 0)
+    
+    local discordButton = Instance.new("TextButton", frame)
+    discordButton.Size = UDim2.new(0.8, 0, 0.2, 0)
+    discordButton.Position = UDim2.new(0.1, 0, 0.75, 0)
+    discordButton.Text = "Join Discord for key"
+    discordButton.BackgroundColor3 = Color3.fromRGB(0, 122, 255)
+    discordButton.TextColor3 = Color3.new(1, 1, 1)
+
+    -- Submit Key
+    submitButton.MouseButton1Click:Connect(function()
+        local inputKey = textBox.Text
+        if checkKey(inputKey) then
+            screenGui:Destroy()
+            StarterGui:SetCore("SendNotification", {Title = "Success"; Text = "Key Verified! Loading script..."; Duration = 2})
+            wait(1)
+            loadstring(game:HttpGet("https://pastebin.com/raw/B0zXzzNt", true))()
+        else
+            StarterGui:SetCore("SendNotification", {Title = "Error"; Text = "Invalid Key!"; Duration = 2})
+        end
+    end)
+
+    -- Open Key Link
+    getKeyButton.MouseButton1Click:Connect(function()
+        setclipboard(keyLink)
+        StarterGui:SetCore("SendNotification", {Title = "Get Key"; Text = "Key link copied! Open your browser to retrieve it."; Duration = 4})
+    end)
+
+    -- Open Discord Invite
+    discordButton.MouseButton1Click:Connect(function()
+        setclipboard(discordInvite)
+        StarterGui:SetCore("SendNotification", {Title = "Join Discord"; Text = "Discord invite copied! Join for support and keys."; Duration = 4})
+    end)
+end
+
+-- Run Key UI
+createKeyUI()
