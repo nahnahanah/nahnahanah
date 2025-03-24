@@ -1,0 +1,51 @@
+function ZenithUI:MakeWindowTab(window, name)
+    local tab = {}
+
+    local tabButton = Create("TextButton", {
+        Name = name .. "_Tab",
+        Size = UDim2.new(0, 100, 0, 30),
+        BackgroundColor3 = Color3.fromRGB(45, 45, 45),
+        Text = name,
+        TextColor3 = Color3.fromRGB(240, 240, 240),
+        Parent = window.TabContainer
+    })
+
+    local tabContent = Create("Frame", {
+        Name = name .. "_Content",
+        Size = UDim2.new(1, 0, 1, -70),
+        Position = UDim2.new(0, 0, 0, 70),
+        BackgroundTransparency = 1,
+        Visible = #window.Tabs == 0, -- Show the first tab by default
+        Parent = window.MainFrame
+    })
+
+    -- Tab Switching Logic
+    tabButton.MouseButton1Click:Connect(function()
+        for _, t in pairs(window.Tabs) do
+            t.Content.Visible = false
+        end
+        tabContent.Visible = true
+    end)
+
+    -- Create a method for adding buttons inside the tab
+    function tab:AddButton(buttonText, callback)
+        local button = Create("TextButton", {
+            Name = buttonText .. "_Button",
+            Size = UDim2.new(0, 200, 0, 40),
+            Position = UDim2.new(0, 10, 0, #self.Content:GetChildren() * 45),
+            BackgroundColor3 = Color3.fromRGB(60, 60, 60),
+            TextColor3 = Color3.fromRGB(255, 255, 255),
+            Text = buttonText,
+            Parent = self.Content
+        })
+        
+        button.MouseButton1Click:Connect(callback)
+        return button
+    end
+
+    -- Store the tab in the window
+    tab.Content = tabContent
+    table.insert(window.Tabs, tab)
+
+    return tab
+end
