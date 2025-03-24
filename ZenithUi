@@ -1,0 +1,157 @@
+if not game:IsLoaded() then game.Loaded:Wait() end
+
+local ZenithUI = {}
+local uis = game:GetService("UserInputService")
+
+-- Theme system
+local Themes = {
+    Light = {
+        Background = Color3.fromRGB(230, 230, 230),
+        Background_ = Color3.fromRGB(210, 210, 210),
+        TextLabel = Color3.fromRGB(50, 50, 50)
+    },
+    Dark = {
+        Background = Color3.fromRGB(30, 30, 30),
+        Background_ = Color3.fromRGB(45, 45, 45),
+        TextLabel = Color3.fromRGB(240, 240, 240)
+    },
+    Ocean = {
+        Background = Color3.fromRGB(10, 45, 60),
+        Background_ = Color3.fromRGB(20, 60, 80),
+        TextLabel = Color3.fromRGB(200, 220, 255)
+    }
+}
+
+-- Helper function to create UI elements
+local function Create(instanceType, properties)
+    local obj = Instance.new(instanceType)
+    for prop, value in pairs(properties) do
+        pcall(function() obj[prop] = value end)
+    end
+    return obj
+end
+
+-- Function to create the main UI window
+function ZenithUI:MakeWindow(options)
+    local theme = Themes[options.Theme] or Themes["Dark"]
+    
+    local screenGui = Create("ScreenGui", {
+        Name = "ZenithUI",
+        Parent = game.CoreGui
+    })
+
+    local windowFrame = Create("Frame", {
+        Name = "MainFrame",
+        Size = UDim2.new(0, 500, 0, 400),
+        Position = UDim2.new(0.5, -250, 0.5, -200),
+        BackgroundColor3 = theme.Background,
+        BorderSizePixel = 0,
+        Active = true,
+        Draggable = true,
+        Parent = screenGui
+    })
+
+    -- Top bar (for title and dragging)
+    local topBar = Create("Frame", {
+        Name = "TopBar",
+        Size = UDim2.new(1, 0, 0, 40),
+        BackgroundColor3 = theme.Background_,
+        BorderSizePixel = 0,
+        Parent = windowFrame
+    })
+
+    local titleLabel = Create("TextLabel", {
+        Name = "Title",
+        Size = UDim2.new(1, -10, 1, 0),
+        Position = UDim2.new(0, 5, 0, 0),
+        BackgroundTransparency = 1,
+        TextSize = 16,
+        TextColor3 = theme.TextLabel,
+        Text = options.Title or "Zenith UI",
+        TextXAlignment = Enum.TextXAlignment.Left,
+        Parent = topBar
+    })
+
+    -- Tab Container
+    local tabContainer = Create("Frame", {
+        Name = "TabContainer",
+        Size = UDim2.new(1, 0, 0, 30),
+        Position = UDim2.new(0, 0, 0, 40),
+        BackgroundColor3 = theme.Background_,
+        Parent = windowFrame
+    })
+
+    -- Dragging functionality
+    local dragging, dragInput, dragStart, startPos
+    topBar.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragging = true
+            dragStart = input.Position
+            startPos = windowFrame.Position
+
+            input.Changed:Connect(function()
+                if input.UserInputState == Enum.UserInputState.End then
+                    dragging = false
+                end
+            end)
+        end
+    end)
+
+    topBar.InputChanged:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseMovement then
+            dragInput = input
+        end
+    end)
+
+    uis.InputChanged:Connect(function(input)
+        if input == dragInput and dragging then
+            local delta = input.Position - dragStart
+            windowFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+        end
+    end)
+
+    -- Return window object
+    local window = {
+        ScreenGui = screenGui,
+        MainFrame = windowFrame,
+        TabContainer = tabContainer,
+        MakeWindowTab = ZenithUI.MakeWindowTab
+    }
+    
+    return window
+end
+
+-- Function to create a new tab
+function ZenithUI:MakeWindowTab(window, name)
+    local tabButton = Create("TextButton", {
+        Name = name .. "_Tab",
+        Size = UDim2.new(0, 100, 0, 30),
+        BackgroundColor3 = Color3.fromRGB(45, 45, 45),
+        Text = name,
+        TextColor3 = Color3.fromRGB(240, 240, 240),
+        Parent = window.TabContainer
+    })
+
+    local tabContent = Create("Frame", {
+        Name = name .. "_Content",
+        Size = UDim2.new(1, 0, 1, -70),
+        Position = UDim2.new(0, 0, 0, 70),
+        BackgroundTransparency = 1,
+        Visible = false,
+        Parent = window.MainFrame
+    })
+
+    -- Tab Switching Logic
+    tabButton.MouseButton1Click:Connect(function()
+        for _, child in ipairs(window.MainFrame:GetChildren()) do
+            if child:IsA("Frame") and child.Name:find("_Content") then
+                child.Visible = false
+            end
+        end
+        tabContent.Visible = true
+    end)
+
+    return tabContent
+end
+
+return ZenithUI
