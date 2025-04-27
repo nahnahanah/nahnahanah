@@ -1,0 +1,97 @@
+-- UILibrary.lua
+local uiLibraryCode = [[
+    local Library = {}
+    Library.__index = Library
+
+    function Library:CreateWindow(name)
+        local gui = Instance.new("ScreenGui")
+        gui.Name = "UILibrary"
+        gui.ResetOnSpawn = false
+        gui.Parent = game:GetService("CoreGui")
+
+        local mainHolder = Instance.new("Frame")
+        mainHolder.Name = "MainHolder"
+        mainHolder.Size = UDim2.new(0, 200, 0, 40)
+        mainHolder.Position = UDim2.new(0, 10, 0, 10)
+        mainHolder.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+        mainHolder.BorderSizePixel = 0
+        mainHolder.Parent = gui
+
+        local openButton = Instance.new("TextButton")
+        openButton.Name = "OpenButton"
+        openButton.Size = UDim2.new(1, 0, 0, 40)
+        openButton.Position = UDim2.new(0, 0, 0, 0)
+        openButton.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+        openButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+        openButton.Text = name or "Library"
+        openButton.Font = Enum.Font.SourceSansBold
+        openButton.TextSize = 20
+        openButton.Parent = mainHolder
+
+        local Window = {}
+        Window.__index = Window
+
+        function Window:CreateTab(tabName)
+            local tabButton = Instance.new("TextButton")
+            tabButton.Name = tabName or "Tab"
+            tabButton.Size = UDim2.new(1, 0, 0, 30)
+            tabButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+            tabButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+            tabButton.Text = tabName or "Tab"
+            tabButton.Font = Enum.Font.SourceSans
+            tabButton.TextSize = 18
+            tabButton.Parent = mainHolder
+
+            local contentFrame = Instance.new("Frame")
+            contentFrame.Name = "Content"
+            contentFrame.Size = UDim2.new(1, 0, 0, 0)
+            contentFrame.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+            contentFrame.BorderSizePixel = 0
+            contentFrame.Parent = mainHolder
+            contentFrame.ClipsDescendants = true
+
+            local elementLayout = Instance.new("UIListLayout")
+            elementLayout.Parent = contentFrame
+            elementLayout.Padding = UDim.new(0, 4)
+
+            local tabOpen = false
+            tabButton.MouseButton1Click:Connect(function()
+                tabOpen = not tabOpen
+                if tabOpen then
+                    contentFrame:TweenSize(UDim2.new(1, 0, 0, 100), "Out", "Quad", 0.3, true)
+                else
+                    contentFrame:TweenSize(UDim2.new(1, 0, 0, 0), "Out", "Quad", 0.3, true)
+                end
+            end)
+
+            local Tab = {}
+            Tab.__index = Tab
+
+            function Tab:CreateButton(buttonName, callback)
+                local button = Instance.new("TextButton")
+                button.Name = buttonName or "Button"
+                button.Size = UDim2.new(1, 0, 0, 30)
+                button.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
+                button.TextColor3 = Color3.fromRGB(255, 255, 255)
+                button.Text = buttonName or "Button"
+                button.Font = Enum.Font.SourceSans
+                button.TextSize = 16
+                button.Parent = contentFrame
+
+                button.MouseButton1Click:Connect(function()
+                    if callback then
+                        callback()
+                    end
+                end)
+            end
+
+            return Tab
+        end
+
+        return setmetatable({}, Window)
+    end
+
+    return setmetatable({}, Library)
+]]
+
+return uiLibraryCode
